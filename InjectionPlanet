@@ -1,0 +1,6 @@
+def inject_companion(P, sep, pa_deg, contrast):
+    theta_rad = np.deg2rad(pa_deg)
+    dx = sep * np.cos(theta_rad)
+    dy = sep * np.sin(theta_rad)
+    phase = 2 * np.pi * (XI * dx + ETA * dy)
+    return P + contrast * P * np.exp(1j * phase)
