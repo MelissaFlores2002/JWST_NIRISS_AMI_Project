@@ -1,0 +1,11 @@
+def add_hexagonal_aperture(XI, ETA, centers, size):
+    P = np.zeros_like(XI)
+    sqrt3 = np.sqrt(3)
+    for x0, y0 in centers:
+        x = XI - x0
+        y = ETA - y0
+        mask = (np.abs(x) <= size) & \
+               (np.abs(y) <= sqrt3 * size / 2) & \
+               (sqrt3 * np.abs(x) + np.abs(y) <= sqrt3 * size)
+        P += mask.astype(float)
+    return P
