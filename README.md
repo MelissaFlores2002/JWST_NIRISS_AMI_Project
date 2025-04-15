@@ -15,4 +15,5 @@ There are 7 functions used in this code. All have been made into their own file 
 The main file is the entire script without the functions in them. There is some redundency due to troubleshooting during the debugging phase, if needed comment those lines out. 
 
 # Slide Deck
-Attached there is a slide deck made for my Space Instrumentation class that explains what is conceptually occuring in the code.**ALL SOURCES OF LITERATURE USED IN ORDER TO MAKE THIS CODE ARE FOUND IN THE REFEREENCES SECTION OF THE SLIDE DECK.  
+Attached there is a slide deck made for my Space Instrumentation class that explains what is conceptually occuring in the code.
+**ALL SOURCES OF LITERATURE USED IN ORDER TO MAKE THIS CODE ARE FOUND IN THE REFEREENCES SECTION OF THE SLIDE DECK.  
