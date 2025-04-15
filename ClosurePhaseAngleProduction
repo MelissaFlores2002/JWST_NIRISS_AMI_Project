@@ -1,0 +1,57 @@
+def trig_Angles(C1, C2, C3, P, xi):
+    N = xi.max()-xi.min()
+    print(N)
+    dx= 0.01
+    fs = 1/(N*dx)
+    #taking the pupil plane coordinates in meters to find the baselines
+    BL12 = C2-C1
+    BL23 = C3-C2
+    BL31 = C1-C3
+    F = np.fft.fftshift(np.fft.fftn(P))
+    
+    Bmean = (np.linalg.norm(BL12)+np.linalg.norm(BL23)+np.linalg.norm(BL31))/3
+    #Need to pick a new value for lamda
+    lamda = 3.8
+    
+    #computing the spatial frequency vector
+    (u1, v1) = BL12/lamda
+    (u2, v2) = BL23/lamda   
+    (u3, v3) = BL31/lamda
+    mag1 = np.sqrt(u1**2 + v1**2)
+    mag2 = np.sqrt(u2**2 + v2**2)
+    mag3 = np.sqrt(u3**2 + v3**2)
+    f = (mag1+mag2+mag3)/3
+
+    u1_idx = int(np.round(u1 / fs + N / 2))
+    v1_idx = int(np.round(v1 / fs + N / 2))
+    u2_idx = int(np.round(u2 / fs + N / 2))
+    v2_idx = int(np.round(v2 / fs + N / 2))
+    u3_idx = int(np.round(u3 / fs + N / 2))
+    v3_idx = int(np.round(v3 / fs + N / 2))
+    print(u1_idx)
+    
+    V1_mn = F[v1_idx, u1_idx]
+    
+    a1 = np.real(V1_mn)
+    b1 = np.imag(V1_mn) 
+    V2_mn = F[v2_idx, u2_idx]
+    a2 = np.real(V2_mn)
+    b2 = np.imag(V2_mn) 
+    V3_mn = F[v3_idx, u3_idx]
+    a3 = np.real(V3_mn)
+    b3 = np.imag(V3_mn) 
+    
+    vis_amps = np.array(([np.abs(V1_mn)],[np.abs(V2_mn)],[np.abs(V3_mn)]))
+    vis_phases = np.array(([np.angle(V1_mn)], [np.angle(V2_mn)], [np.angle(V3_mn)]))
+    
+    V = np.vstack(([V1_mn], [V2_mn], [V3_mn]))
+    b = np.vstack(([b1], [b2], [b3]))
+    b2 = np.vstack(([np.linalg.norm(BL12)], [np.linalg.norm(BL23)], [np.linalg.norm(BL31)]))
+    a = np.vstack(([a1], [a2], [a3]))
+    print(f"B matrix: {b}")
+    print(f"Transformation: {BL12}")
+    phi1 = np.atan2(b[0],a[0])
+    phi2 = np.atan2(b[1],a[1])
+    phi3 = np.atan2(b[2],a[2])
+    ClosurePhase = np.angle(np.exp(1j *(phi1 + phi2 + phi3)))
+    return ClosurePhase, Bmean, b2, vis_amps, vis_phases, f
