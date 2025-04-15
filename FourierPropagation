@@ -1,0 +1,2 @@
+def prop(A):
+    return np.abs(np.fft.fftshift(np.fft.fftn(A)))
