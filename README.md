@@ -3,6 +3,7 @@ Project for space instrumentation, conducting 1st order analysis using the AMI i
 
 # Functions
 There are 7 functions used in this code. All have been made into their own file for readability.
-
+1. MakeFig: Makes a figure of the aperature positions, the intensity of the Point Spread Function, the logrithmic intensity and the crooss section of the logrithmic intsensity. 
+2. 
 # Main File
 The main file is the entire script without the functions in them. There is some redundency due to troubleshooting during the debugging phase, if needed comment those lines out. 
