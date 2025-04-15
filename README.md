@@ -4,5 +4,5 @@ Project for space instrumentation, conducting 1st order analysis using the AMI i
 # Functions
 There are 7 functions used in this code. All have been made into their own file for readability.
 
-#Main File
+# Main File
 The main file is the entire script without the functions in them. There is some redundency due to troubleshooting during the debugging phase, if needed comment those lines out. 
