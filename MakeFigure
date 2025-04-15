@@ -1,0 +1,24 @@
+def makefig(P, w=128):
+    plt.figure()
+    F = prop(P)**2
+    logf = np.log(np.maximum(F, 1e-12))  # avoid log(0) issues
+    W = P.shape[0]//2
+    N = P.shape[0]
+    freq = np.fft.fftshift(np.fft.fftfreq(N, d=1))
+    U, V = np.meshgrid(freq, freq)
+    plt.subplot(221)
+    plt.title("Aperture")
+    W = P.shape[0]//2
+    plt.imshow(np.real(P)[W-w:W+w,W-w:W+w])
+    plt.subplot(222)
+    plt.title("Intensity I")
+    plt.imshow(F[W-w:W+w, W-w:W+w])
+    plt.axis("off")
+    plt.subplot(223)
+    plt.title("Log of I")
+    plt.imshow(logf[W-w:W+w, W-w:W+w])
+    plt.axis("off")
+    plt.subplot(224)
+    plt.title("Crosssection Log of I")
+    plt.plot(logf[W, W-w:W+w])
+    plt.axis("off")
