@@ -1,0 +1,11 @@
+def plot_aperture_with_triangle(centers, triangle):
+    plt.figure(figsize=(6, 6))
+    plt.imshow(P, cmap='gray', extent=[-3.5, 3.5, 3.5, -3.5])
+    x = centers[triangle, 0]
+    y = centers[triangle, 1]
+    plt.plot(np.append(x, x[0]), np.append(y, y[0]), 'r-', lw=2, label='Triangle')
+    plt.title("7-hole Mask Triangle")
+    plt.xlabel("X (m)"); plt.ylabel("Y (m)")
+    plt.legend()
+    plt.gca().set_aspect('equal')
+    plt.show()
