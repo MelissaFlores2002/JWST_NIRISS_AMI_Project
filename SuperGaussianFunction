@@ -1,0 +1,10 @@
+
+def SG(XI, ETA, fwhm, n=4):
+    S_Gaus = np.zeros(XI.shape)
+    n_p = np.zeros(fwhm.shape)
+    for i in range(len(fwhm)):
+        R = np.sqrt(XI**2 + ETA**2)
+        sig = fwhm[i]/((2*np.log(2))**(1/n))
+        S_Gaus = np.exp(-(R / sig)**n)
+        n_p[i] = np.sum(S_Gaus)
+    return S_Gaus, n_p
