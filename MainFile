@@ -1,0 +1,90 @@
+#Grid setup in meters
+N = 100
+xi = np.linspace(-3.5, 3.5, N) #meters
+XI, ETA = np.meshgrid(xi, xi)
+N_holes = 7
+Dia = 6.5 #m
+# h = 6.626*(10**-34) #J*s
+# c = 3*(10**8) #m/s
+lamda = 3.8 #mum
+sig = 5
+fwhms = np.linspace(28, 48, 100)
+# np = 2*(80*80)
+sigpix = 100 #electrions^2 <- from JWST Documentation 
+XSqua = 25 #corresponds to sig = 5
+
+#HIP 65426 Values pulled from literature 
+planet_sep = 0.11# in lambda/D units
+planet_pa_deg = 288  # position angle in degrees (0 = along x-axis)
+planet_contrast = 7.6 # flux ratio (mag ~ 6.5)
+
+#Parameters for hexagon layout
+size = 0.4  # hexagon half-width
+L = 0.3     # spacing from center
+centers = np.array(([0, 2.6138], [-2.27365, 0], [-2.27365, -1.30028], [-1.1427, -1.9574],[1.1275, -1.9574], [2.2550,-1.3127], [2.2531,1.2995]))  # central hexagon
+# B4, C2, B2, C1, C6, B6, B5
+
+#Create combined aperture and plot
+P = add_hexagonal_aperture(XI, ETA, centers, size)
+makefig(P, w = 35)  #adjust zoom to fit all 7
+
+#making the Super guassian 
+SG,n_pix = SG(XI, ETA, fwhms)
+P = P/ np.sum(P)
+SigCP = []
+closure_angles = []
+
+for fwhm in fwhms:
+    # Generate Super-Gaussian window for this FWHM
+    sig = fwhm / ((2 * np.log(2)) ** (1 / 4))
+
+    #Creating a Pixel grid
+    N = 100
+    yc, xc = N // 2, N // 2
+    YY, XX = np.indices((N, N))
+    R = np.sqrt((XX - xc)**2 + (YY - yc)**2)
+    SG = np.exp(-(R / sig)**4)
+    P = add_hexagonal_aperture(XI, ETA, centers, size)
+    n_pix = np.sum(SG*P)
+
+    # Apply SG to PSF
+    P_w = np.abs(prop(P))**2 * SG
+    N_g = np.sum(P_w)
+    P_inj = inject_companion(P_w, planet_sep, planet_pa_deg, planet_contrast)
+    # (ClosurePhase1, Bmean1, b1, V1, Vp, f1) = trig_Angles(centers[0], centers[2] , centers[3], P_inj, xi)
+    # closure_angles.append(np.rad2deg(ClosurePhase1))  # convert to degrees if needed
+
+    # Compute sigma_CP
+    #both of these sigmas are from literature, but the uncommented one accounts for more noise
+    #sig_cp = (N_holes / N_pho) * np.sqrt(1.5)
+    sig_cp = (N_holes / N_g) * np.sqrt(0.5 * (N_g+ n_pix * sigpix))
+    SigCP.append(sig_cp)
+
+SigCP = np.array(SigCP)
+
+# Normalizing, and then printing the associated values
+SigCP_renorm = SigCP / SigCP[0]
+print("FWHM (px)   Normalized σ_CP")
+for i in range(len(fwhms)):
+    print(f"{fwhms[i]:>8}   {SigCP_renorm[i]:.4f}")
+
+plt.figure(figsize=(8, 5))
+plt.plot(fwhms, SigCP_renorm, 'o-k')
+plt.xlabel("Super-Gaussian FWHM")
+plt.ylabel("Normalized σ$_{CP}$")
+plt.title("σ$_{CP}$ vs. SG FWHM for HIP 65426 b")
+plt.legend()
+plt.grid(True)
+plt.tight_layout()
+plt.show()
+plot_aperture_with_triangle(centers, [0, 2, 3])  # B4, B2, C1
+
+#Finding the values of the thre triangles used in the referenced literature
+#Using Triangle 1, B4, B2, C1
+(ClosurePhase1, Bmean1, b1, V1, Vp, f1) = trig_Angles(centers[0], centers[2] , centers[3], P_inj, xi)
+
+#Using Triangle 2, C2, C6, C1
+ClosurePhase2, Bmean2, b2, V2 ,Vp2, f2 = trig_Angles(centers[1], centers[3] , centers[4], P_inj, xi)
+
+#Using Triangle 3, C2, B2, B6
+ClosurePhase3, Bmean3, b3, V3 , Vp3, f3= trig_Angles(centers[1], centers[2] , centers[5], P_inj, xi)
